@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.MediaController;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -34,20 +33,14 @@ public class FloatViewManager {
     private int mFloatViewLastY;
     private int mFloatViewFirstX;
     private int mFloatViewFirstY;
+    private VideoView videoView;
 
     @SuppressLint("InflateParams")
     public FloatViewManager(Activity activity) {
         mActivity = activity;
         LayoutInflater inflater = LayoutInflater.from(activity);
         mFloatView = inflater.inflate(R.layout.float_view_layout, null);
-        VideoView videoView = mFloatView.findViewById(R.id.textView);
-
-        MediaController mediaController = new MediaController(mActivity);
-        videoView.setMediaController(mediaController);
-        mediaController.setAnchorView(videoView);
-
-        videoView.setVideoURI(Uri.parse("android.resource://" + mActivity.getPackageName() + "/" + R.raw.videoplayback));
-        videoView.start();
+        videoView = mFloatView.findViewById(R.id.textView);
 
         ImageButton imageButton = mFloatView.findViewById(R.id.imageButton);
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +64,6 @@ public class FloatViewManager {
         mFloatViewLayoutParams.gravity = Gravity.CENTER;
         mFloatViewLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         mFloatViewLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
     }
 
     private void dismissFloatView() {
@@ -98,6 +90,19 @@ public class FloatViewManager {
                         mWindowManager = (WindowManager) mActivity.getSystemService(WINDOW_SERVICE);
                         if (mWindowManager != null) {
                             mWindowManager.addView(mFloatView, mFloatViewLayoutParams);
+
+                            // Play video
+
+                            MediaController mediaController = new MediaController(mActivity);
+                            videoView.setMediaController(mediaController);
+                            mediaController.setAnchorView(videoView);
+
+                            videoView.setVideoURI(Uri.parse("android.resource://"
+                                    + mActivity.getPackageName()
+                                    + "/"
+                                    + R.raw.videoplayback));
+                            videoView.requestFocus();
+                            videoView.start();
                         }
                     }
                 }
